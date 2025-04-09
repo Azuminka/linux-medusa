@@ -616,7 +616,39 @@ static int medusa_sem_ctl(struct kern_ipc_perm *ipcp, int cmd)
  */
 
 #endif	/* CONFIG_SECURITY_NETWORK */
+#ifdef CONFIG_MEDUSA_MOUNT
+static int medusa_l1_sb_alloc_security(struct super_block *sb)
+{
+	return 0;
+}
 
+static int medusa_l1_sb_mount(const char *dev_name, const struct path *path,
+                       const char *type, unsigned long flags, void *data)
+{
+    return 0;
+}
+
+static int l1_sb_remount(struct super_block *sb, void *data)
+{
+    return 0;
+}
+
+static int l1_sb_umount(struct vfsmount *mnt, int flags)
+{
+    return 0;
+}
+
+static int l1_move_mount(const struct path *from_path, const struct path *to_path)
+{
+    return 0;
+}
+
+static int l1_sb_pivotroot(const struct path *old_path, const struct path *new_path)
+{
+    return 0;
+}
+
+#endif	/* CONFIG_MEDUSA_MOUNT */
 /*
  * static void medusa_l1_d_instantiate(struct dentry *dentry, struct inode *inode)
  * {
