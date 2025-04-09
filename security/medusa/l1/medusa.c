@@ -745,6 +745,14 @@ static struct security_hook_list medusa_l1_hooks[] = {
 	 * LSM_HOOK_INIT(sk_clone_security, medusa_l1_sk_clone_security),
 	 */
 #endif /* CONFIG_SECURITY_NETWORK */
+
+#ifdef CONFIG_MEDUSA_MOUNT
+    LSM_HOOK_INIT(sb_mount, medusa_l1_sb_mount),
+    LSM_HOOK_INIT(sb_remount, medusa_l1_sb_remount),
+    LSM_HOOK_INIT(sb_umount, medusa_l1_sb_umount),
+    LSM_HOOK_INIT(move_mount, medusa_l1_move_mount),
+    LSM_HOOK_INIT(sb_pivotroot, medusa_l1_sb_pivotroot),
+#endif
 };
 
 struct security_hook_list medusa_l1_hooks_alloc[] = {
@@ -762,6 +770,9 @@ struct security_hook_list medusa_l1_hooks_alloc[] = {
 	//LSM_HOOK_INIT(msg_queue_free_security, medusa_l1_msg_queue_free_security),
 	//LSM_HOOK_INIT(msg_msg_alloc_security, medusa_l1_msg_msg_alloc_security),
 	//LSM_HOOK_INIT(msg_msg_free_security, medusa_l1_msg_msg_free_security),
+
+	LSM_HOOK_INIT(sb_alloc_security, medusa_l1_sb_alloc_security),
+	LSM_HOOK_INIT(sb_free_security, medusa_l1_sb_free_security),
 };
 
 const struct lsm_id medusa_lsmid = {
