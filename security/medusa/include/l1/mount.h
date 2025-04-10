@@ -11,6 +11,22 @@ extern enum medusa_answer_t medusa_remount(const struct path *path, unsigned lon
 extern enum medusa_answer_t medusa_pivotroot(const struct path *old_path, const struct path *new_path);
 extern enum medusa_answer_t medusa_move_mount(const struct path *from_path, const struct path *to_path);
 
+extern struct lsm_blob_sizes medusa_blob_sizes;
+
+/**
+ * mount_security - access Medusa L1 mount security data from a given path
+ * @path: pointer to struct path which represents the mount point
+ *
+ * This macro computes a pointer to the Medusa L1 mount security structure
+ * stored in the s_security blob of the superblock associated with the given
+ * path. It assumes that the superblock security blob has been allocated and
+ * initialized by the LSM core.
+ *
+ * Return: pointer to struct medusa_l1_mount_s associated with the given path
+ */
+#define mount_security(path) \
+	((struct medusa_l1_mount_s *)((char *)(path)->mnt->mnt_sb->s_security + medusa_blob_sizes.lbs_superblock))
+
 /**
  * struct medusa_l1_mount_s - Medusa L1 security data for superblock objects
  * @mount_class: classification of the mounted filesystem (currently unused)
