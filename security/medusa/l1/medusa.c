@@ -619,6 +619,11 @@ static int medusa_sem_ctl(struct kern_ipc_perm *ipcp, int cmd)
 #ifdef CONFIG_MEDUSA_MOUNT
 static int medusa_l1_sb_alloc_security(struct super_block *sb)
 {
+	struct medusa_l1_mount_s *msec = mount_security(sb);
+
+	init_med_object(&msec->med_object);
+	msec->mount_class = 0;
+
 	return 0;
 }
 
