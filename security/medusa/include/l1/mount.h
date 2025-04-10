@@ -11,6 +11,17 @@ extern enum medusa_answer_t medusa_remount(const struct path *path, unsigned lon
 extern enum medusa_answer_t medusa_pivotroot(const struct path *old_path, const struct path *new_path);
 extern enum medusa_answer_t medusa_move_mount(const struct path *from_path, const struct path *to_path);
 
+/**
+ * struct medusa_l1_mount_s - Medusa L1 security data for superblock objects
+ * @mount_class: classification of the mounted filesystem (currently unused)
+ * @med_object: subject identity structure containing metadata of the task
+ * that performed the mount
+ *
+ * This structure is used by Medusa to store security metadata associated with
+ * mounted filesystems (superblocks). It is embedded into the LSM security blob
+ * (s_security) of each super_block and is initialized by the sb_alloc_security
+ * hook.
+ */
 struct medusa_l1_mount_s {
 	unsigned int mount_class;
 	struct medusa_object_s med_object;
