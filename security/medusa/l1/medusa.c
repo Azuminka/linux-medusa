@@ -16,6 +16,7 @@
 #include "l1/ipc.h"
 #include "l1/socket.h"
 #include "l1/fuck.h"
+#include "l1/mount.h"
 #include "../../../../fs/mount.h" /* real_mount(), struct mount */
 
 /* Used by `medusa_l1_creds_for_exec` */
@@ -616,7 +617,7 @@ static int medusa_sem_ctl(struct kern_ipc_perm *ipcp, int cmd)
  */
 
 #endif	/* CONFIG_SECURITY_NETWORK */
-#ifdef CONFIG_SECURITY_MOUNT
+
 static int medusa_l1_sb_alloc_security(struct super_block *sb)
 {
 	struct medusa_l1_mount_s *msec = mount_security(sb);
@@ -626,7 +627,11 @@ static int medusa_l1_sb_alloc_security(struct super_block *sb)
 
 	return 0;
 }
-
+static void medusa_l1_sb_free_security(struct super_block *sb)
+{
+	/*nothing really here*/
+}
+#ifdef CONFIG_SECURITY_MOUNT
 static int medusa_l1_sb_mount(const char *dev_name, const struct path *path,
                        const char *type, unsigned long flags, void *data)
 {

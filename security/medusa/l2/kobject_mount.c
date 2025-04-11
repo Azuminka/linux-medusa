@@ -39,7 +39,7 @@ MED_KCLASS(mount_kobject) {
     NULL,                    /* init */
     NULL,                    /* destroy */
     mount_fetch,
-    mount_upadte,
+    mount_update,
     NULL                     /* unmonitor */
 };
 

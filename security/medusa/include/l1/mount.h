@@ -20,18 +20,21 @@ extern enum medusa_answer_t medusa_move_mount(const struct path *from_path, cons
 extern struct lsm_blob_sizes medusa_blob_sizes;
 
 /**
- * mount_security - access Medusa L1 mount security data from a given path
- * @path: pointer to struct path which represents the mount point
+ * mount_security - access Medusa L1 mount security data from a superblock
+ * @sb: pointer to struct super_block associated with a mounted filesystem
  *
  * This macro computes a pointer to the Medusa L1 mount security structure
- * stored in the s_security blob of the superblock associated with the given
- * path. It assumes that the superblock security blob has been allocated and
- * initialized by the LSM core.
+ * stored in the s_security blob of the given superblock. It assumes that
+ * the security blob has been allocated and initialized by the LSM framework
+ * during the mount operation. The structure provides subject identity and
+ * optional mount classification used for access control decisions.
  *
- * Return: pointer to struct medusa_l1_mount_s associated with the given path
+ * Return: pointer to struct medusa_l1_mount_s associated with the given
+ * superblock
  */
-#define mount_security(path) \
-	((struct medusa_l1_mount_s *)((char *)(path)->mnt->mnt_sb->s_security + medusa_blob_sizes.lbs_superblock))
+#define mount_security(sb) \
+  ((struct medusa_l1_mount_s *)((char *)(sb)->s_security + medusa_blob_sizes.lbs_superblock))
+
 
 /**
  * struct medusa_l1_mount_s - Medusa L1 security data for superblock objects
