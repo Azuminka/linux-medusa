@@ -12,6 +12,13 @@
 #include "l3/registry.h"
 #include "l2/kobject_mount.h"
 
+MED_ATTRS(mount_kobject) {
+	MED_ATTR_KEY_RO(mount_kobject, mnt_id, "mnt_id", MED_UNSIGNED),
+	MED_ATTR_RO(mount_kobject, path, "path", MED_STRING),
+	MED_ATTR_OBJECT(mount_kobject),
+	MED_ATTR_END
+};
+
 inline int mount_kern2kobj(struct mount_kobject *mk, const struct path *path)
 {
     return 0;
