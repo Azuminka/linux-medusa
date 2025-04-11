@@ -1,4 +1,9 @@
 // SPDX-License-Identifier: GPL-2.0
+
+/*
+ * Copyright (C) 2025 by Stanislava Peckova
+ */
+
 #include <linux/dcache.h>
 #include <linux/fs.h> 
 #include <linux/mount.h> 

@@ -1,5 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 
+/*
+ * Copyright (C) 2025 by Stanislava Peckova
+ */
+
 #ifndef _MOUNT_KOBJECT_H
 #define _MOUNT_KOBJECT_H
 

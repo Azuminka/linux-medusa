@@ -1,3 +1,9 @@
+// SPDX-License-Identifier: GPL-2.0
+
+/*
+ * Copyright (C) 2025 by Stanislava Peckova
+ */
+
 #ifndef __MEDUSA_L1_MOUNT_H__
 #define __MEDUSA_L1_MOUNT_H__
 
