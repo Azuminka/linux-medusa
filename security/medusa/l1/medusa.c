@@ -616,7 +616,7 @@ static int medusa_sem_ctl(struct kern_ipc_perm *ipcp, int cmd)
  */
 
 #endif	/* CONFIG_SECURITY_NETWORK */
-#ifdef CONFIG_MEDUSA_MOUNT
+#ifdef CONFIG_SECURITY_MOUNT
 static int medusa_l1_sb_alloc_security(struct super_block *sb)
 {
 	struct medusa_l1_mount_s *msec = mount_security(sb);
@@ -653,7 +653,7 @@ static int l1_sb_pivotroot(const struct path *old_path, const struct path *new_p
     return 0;
 }
 
-#endif	/* CONFIG_MEDUSA_MOUNT */
+#endif	/* CONFIG_SECURITY_MOUNT */
 /*
  * static void medusa_l1_d_instantiate(struct dentry *dentry, struct inode *inode)
  * {
@@ -783,13 +783,13 @@ static struct security_hook_list medusa_l1_hooks[] = {
 	 */
 #endif /* CONFIG_SECURITY_NETWORK */
 
-#ifdef CONFIG_MEDUSA_MOUNT
+#ifdef CONFIG_SECURITY_MOUNT
     LSM_HOOK_INIT(sb_mount, medusa_l1_sb_mount),
     LSM_HOOK_INIT(sb_remount, medusa_l1_sb_remount),
     LSM_HOOK_INIT(sb_umount, medusa_l1_sb_umount),
     LSM_HOOK_INIT(move_mount, medusa_l1_move_mount),
     LSM_HOOK_INIT(sb_pivotroot, medusa_l1_sb_pivotroot),
-#endif
+#endif /* CONFIG_SECURITY_MOUNT */
 };
 
 struct security_hook_list medusa_l1_hooks_alloc[] = {
