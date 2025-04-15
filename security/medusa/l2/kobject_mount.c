@@ -88,6 +88,41 @@ static inline int mount_kobj2kern(struct mount_kobject *mk, struct super_block *
 	return 0;
 }
 
+/**
+ * resolve_mount_path_by_id - resolve struct path from mount ID
+ * @mnt_id: mount identifier to look up
+ * @out_path: pointer to struct path to be filled on success
+ *
+ * Return: 0 on success, -ENOENT if no matching mount is found
+ */
+
+int resolve_mount_path_by_id(unsigned long mnt_id, struct path *out_path)
+{
+	struct mnt_namespace *ns;
+	struct mount *mnt;
+	int ret = -ENOENT;
+
+	rcu_read_lock();
+
+	ns = rcu_dereference(current->nsproxy->mnt_ns);
+	if (!ns)
+		goto out;
+
+	mnt = ns->root;
+
+	if (mnt->mnt_id == mnt_id) {
+		out_path->mnt = &mnt->mnt;
+		out_path->dentry = mnt->mnt.mnt_root;
+		path_get(out_path);
+		ret = 0;
+	}
+
+out:
+	rcu_read_unlock();
+	return ret;
+}
+
+
 static struct medusa_kobject_s *mount_fetch(struct medusa_kobject_s *kobj)
 {
     return NULL;
