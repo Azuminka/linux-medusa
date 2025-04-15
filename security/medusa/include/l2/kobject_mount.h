@@ -18,4 +18,5 @@ struct mount_kobject {
 
 extern MED_DECLARE_KCLASSOF(mount_kobject);
 
+int mount_kern2kobj(struct mount_kobject *mk, const struct path *path);
 #endif

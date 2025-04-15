@@ -7,7 +7,9 @@
 #ifndef __MEDUSA_L1_MOUNT_H__
 #define __MEDUSA_L1_MOUNT_H__
 
+#include <linux/lsm_hooks.h>
 #include <linux/path.h>
+
 #include "l3/med_model.h"
 
 /* prototypes of L2 process related handlers called from L1 hooks */
