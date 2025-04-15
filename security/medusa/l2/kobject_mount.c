@@ -32,7 +32,6 @@ MED_ATTRS(mount_kobject) {
  *         -ENOMEM if memory allocation fails,
  *         other negative error code if path formatting fails.
  */
-
 inline int mount_kern2kobj(struct mount_kobject *mk, const struct path *path)
 {
     char *buf;
@@ -64,9 +63,29 @@ inline int mount_kern2kobj(struct mount_kobject *mk, const struct path *path)
     return 0;
 }
 
-static inline int mount_kobj2kern(struct mount_kobject *mk, const struct path *path)
+/**
+ * mount_kobj2kern - write mount_kobject data back to kernel structure
+ * @mk: pointer to Medusa mount_kobject structure
+ * @sb: pointer to the kernel super_block structure representing the mounted fs
+ *
+ * This function writes data from the given mount_kobject back into kernel's L1
+ * security blob associated with the specified superblock.
+ *
+ * Return: 0 on success,
+ *         -EINVAL if any pointer is NULL or the security blob is missing
+ */
+static inline int mount_kobj2kern(struct mount_kobject *mk, struct super_block *sb)
 {
-    return 0;
+	if (unlikely(!mk || !sb || !mount_security(sb))) {
+		med_pr_err("ERROR: NULL pointer in %s: mk=%p sb=%p sec=%p",
+		           __func__, mk, sb, mount_security(sb));
+		return -EINVAL;
+	}
+
+	mount_security(sb)->med_object = mk->med_object;
+	med_magic_validate(&mount_security(sb)->med_object);
+
+	return 0;
 }
 
 static struct medusa_kobject_s *mount_fetch(struct medusa_kobject_s *kobj)
