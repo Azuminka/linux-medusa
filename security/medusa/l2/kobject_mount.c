@@ -95,7 +95,6 @@ static inline int mount_kobj2kern(struct mount_kobject *mk, struct super_block *
  *
  * Return: 0 on success, -ENOENT if no matching mount is found
  */
-
 int resolve_mount_path_by_id(unsigned long mnt_id, struct path *out_path)
 {
 	struct mnt_namespace *ns;
@@ -122,10 +121,39 @@ out:
 	return ret;
 }
 
-
+/**
+ * mount_fetch - refetch mount_kobject data from the kernel
+ * @kobj: pointer to a generic Medusa kernel object
+ *
+ * This function attempts to refetch up-to-date information about a mounted
+ * filesystem based on the mount ID stored in the provided mount_kobject
+ * structure. It locates the corresponding kernel path and fills the object
+ * with the latest data from the VFS layer and Medusa L1 security blob.
+ *
+ * Return: pointer to the updated medusa_kobject_s on success,
+ *         NULL if refetching or reconstruction failed.
+ */
 static struct medusa_kobject_s *mount_fetch(struct medusa_kobject_s *kobj)
 {
-    return NULL;
+	struct mount_kobject *mk;
+	struct path resolved_path;
+	struct medusa_kobject_s *retval = NULL;
+
+	mk = (struct mount_kobject *)kobj;
+	if (!mk)
+		goto out_err;
+
+	if (resolve_mount_path_by_id(mk->mnt_id, &resolved_path) != 0)
+		goto out_err;
+
+	retval = kobj;
+	if (unlikely(mount_kern2kobj(mk, &resolved_path) < 0))
+		retval = NULL;
+
+	path_put(&resolved_path);
+
+out_err:
+	return retval;
 }
 
 static enum medusa_answer_t mount_update(struct medusa_kobject_s *kobj)
