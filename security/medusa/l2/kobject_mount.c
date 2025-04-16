@@ -156,6 +156,9 @@ out_err:
 	return retval;
 }
 
+/**
+ * Currently not needed: no runtime updates to mount_kobject are required.
+ */
 static enum medusa_answer_t mount_update(struct medusa_kobject_s *kobj)
 {
     enum medusa_answer_t retval = MED_ERR;
