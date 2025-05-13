@@ -30,6 +30,18 @@ static int __init mount_evtype_init(void)
 	return 0;
 }
 
+/**
+ * mount_kobj_validate_sb - validate and register mount kobject
+ * @sb: pointer to superblock representing the mounted filesystem
+ *
+ * This function validates the mount object represented by the given
+ * superblock by initializing its Medusa object and preparing a mount_event
+ * structure. It communicates with the authorization server to ensure the
+ * object is known and permitted under the current security policy.
+ *
+ * Return: 1 if validation succeeds, 0 if the authserver is not present,
+ *         or MED_ERR on error.
+ */
 int mount_kobj_validate_sb(struct super_block *sb)
 {
 	enum medusa_answer_t retval;
