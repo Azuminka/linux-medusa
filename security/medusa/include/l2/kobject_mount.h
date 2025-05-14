@@ -12,7 +12,7 @@
 
 struct mount_kobject {
 	unsigned long 			mnt_id;
-    const char 				*path;
+    char                    mount_path[PATH_MAX];
     struct medusa_object_s 	med_object;
 };
 

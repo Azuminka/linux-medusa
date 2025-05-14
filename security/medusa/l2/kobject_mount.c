@@ -12,7 +12,7 @@
 
 MED_ATTRS(mount_kobject) {
 	MED_ATTR_KEY_RO(mount_kobject, mnt_id, "mnt_id", MED_UNSIGNED),
-	MED_ATTR_RO(mount_kobject, path, "path", MED_STRING),
+	MED_ATTR_RO(mount_kobject, mount_path, "path", MED_STRING),
 	MED_ATTR_OBJECT(mount_kobject),
 	MED_ATTR_END
 };
@@ -23,9 +23,10 @@ MED_ATTRS(mount_kobject) {
  * @path: pointer to the kernel path structure
  *
  * This function fills the provided mount_kobject structure with relevant data
- * extracted from a kernel path. It copies the mount ID, allocates and stores a
- * string representation of the mount point path and copies the subject identity
- * (med_object) from the Medusa L1 security blob associated with the superblock.
+ * extracted from a kernel path. It sets the mount ID, copies the string
+ * representation of the mount point path into the fixed-size buffer
+ * mount_path, and copies the subject identity (med_object) from the Medusa
+ * L1 security blob associated with the superblock.
  *
  * Return: 0 on success,
  *         -EINVAL if input pointers are invalid,
@@ -34,7 +35,7 @@ MED_ATTRS(mount_kobject) {
  */
 inline int mount_kern2kobj(struct mount_kobject *mk, const struct path *path)
 {
-    char *buf;
+    char *resolved_path;
 
     if (unlikely(!mk || !path || !path->mnt || !path->dentry || !path->mnt->mnt_sb || !mount_security(path->mnt->mnt_sb))) {
 		med_pr_err("ERROR: NULL pointer: %s: mk=%p or path or security blob is NULL",
@@ -46,17 +47,11 @@ inline int mount_kern2kobj(struct mount_kobject *mk, const struct path *path)
 
     mk->mnt_id = real_mount(path->mnt)->mnt_id;
 
-    buf = kmalloc(PATH_MAX, GFP_KERNEL);
-	if (!buf)
-		return -ENOMEM;
-
-	mk->path = kstrdup(dentry_path_raw(path->dentry, buf, PATH_MAX), GFP_KERNEL);
-	kfree(buf);
-
-	if (IS_ERR(mk->path))
-		return PTR_ERR(mk->path);
-	if (!mk->path)
-		return -ENOMEM;
+	resolved_path = dentry_path_raw(path->dentry, mk->mount_path, sizeof(mk->mount_path));
+	if (IS_ERR(resolved_path)) {
+		med_pr_err("ERROR: Failed to get mount path in %s: %ld", __func__, PTR_ERR(resolved_path));
+		return PTR_ERR(resolved_path);
+	}
 
 	mk->med_object = mount_security(path->mnt->mnt_sb)->med_object;
 
