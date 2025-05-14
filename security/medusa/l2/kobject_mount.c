@@ -152,11 +152,37 @@ out_err:
 }
 
 /**
- * Currently not needed: no runtime updates to mount_kobject are required.
+ * mount_update - update kernel security blob from mount_kobject
+ * @kobj: pointer to the generic Medusa kobject structure
+ *
+ * This function updates the kernel's L1 security structure associated with a
+ * mounted filesystem using data from the corresponding mount_kobject. It
+ * resolves the current path based on the stored mount ID and copies the
+ * Medusa object metadata into the kernel's superblock security blob via
+ * mount_kobj2kern().
+ *
+ * Return: MED_ALLOW on success,
+ *         MED_ERR if the path resolution fails or kernel update fails.
  */
 static enum medusa_answer_t mount_update(struct medusa_kobject_s *kobj)
 {
-    enum medusa_answer_t retval = MED_ERR;
+    struct mount_kobject *mk;
+	struct path resolved_path;
+	enum medusa_answer_t retval = MED_ERR;
+
+	mk = (struct mount_kobject *)kobj;
+
+	if (!kobj)
+		return retval;
+	
+	if (resolve_mount_path_by_id(mk->mnt_id, &resolved_path) != 0)
+		return retval;
+	
+	if (mount_kobj2kern(mk, resolved_path.mnt->mnt_sb) == 0)
+		retval = MED_ALLOW;
+
+	path_put(&resolved_path);
+
     return retval;
 }
 
