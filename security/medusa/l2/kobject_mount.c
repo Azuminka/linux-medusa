@@ -107,7 +107,6 @@ int resolve_mount_path_by_id(unsigned long mnt_id, struct path *out_path)
 	if (mnt->mnt_id == mnt_id) {
 		out_path->mnt = &mnt->mnt;
 		out_path->dentry = mnt->mnt.mnt_root;
-		path_get(out_path);
 		ret = 0;
 	}
 
@@ -145,8 +144,6 @@ static struct medusa_kobject_s *mount_fetch(struct medusa_kobject_s *kobj)
 	if (unlikely(mount_kern2kobj(mk, &resolved_path) < 0))
 		retval = NULL;
 
-	path_put(&resolved_path);
-
 out_err:
 	return retval;
 }
@@ -180,8 +177,6 @@ static enum medusa_answer_t mount_update(struct medusa_kobject_s *kobj)
 	
 	if (mount_kobj2kern(mk, resolved_path.mnt->mnt_sb) == 0)
 		retval = MED_ALLOW;
-
-	path_put(&resolved_path);
 
     return retval;
 }
