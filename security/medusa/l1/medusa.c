@@ -633,9 +633,11 @@ static void medusa_l1_sb_free_security(struct super_block *sb)
 }
 #ifdef CONFIG_SECURITY_MOUNT
 static int medusa_l1_sb_mount(const char *dev_name, const struct path *path,
-                       const char *type, unsigned long flags, void *data)
+								const char *type, unsigned long flags, void *data)
 {
-    return 0;
+	if  (medusa_mount(dev_name, path, type, flags, data) == MED_DENY)
+		return -EACCES;
+	return 0;
 }
 
 static int l1_sb_remount(struct super_block *sb, void *data)
