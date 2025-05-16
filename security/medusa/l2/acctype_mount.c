@@ -67,7 +67,7 @@ enum medusa_answer_t medusa_mount(const char *dev_name, const struct path *path,
 		if (mount_kern2kobj(NULL, path) < 0)
 			return mad.ans;
 
-		if (mount_kobj_validate_sb(path->mnt->mnt_sb) <= 0)
+		if (mount_kobj_validate_path(path) <= 0)
 			return mad.ans;
 	}
 
