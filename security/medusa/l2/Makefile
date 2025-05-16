@@ -46,6 +46,7 @@ obj-y += acctype_socket_sendmsg.o acctype_socket_recvmsg.o
 # arch-dependent files
 obj-y += acctype_ptrace.o
 obj-y += acctype_mount.o
+obj-y += acctype_unmount.o
 #obj-$(CONFIG_MEDUSA_SYSCALL) += acctype_syscall.o
 #obj-y += acctype_syscall.o
 # event types
