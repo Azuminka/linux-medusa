@@ -10,13 +10,9 @@
 
 struct mount_event {
     MEDUSA_ACCESS_HEADER;
-    unsigned long mnt_id;
-    char *mount_path;
 };
 
 MED_ATTRS(mount_event) {
-    MED_ATTR_RO(mount_event, mnt_id, "id", MED_UNSIGNED),
-    MED_ATTR_RO(mount_event, mount_path, "path", MED_STRING),
     MED_ATTR_END
 };
 
@@ -46,20 +42,23 @@ int mount_kobj_validate_path(const struct path *path)
 {
 	enum medusa_answer_t retval;
 	struct mount_event event;
-	struct mount_kobject sender;
+	struct mount_kobject *sender;
 
 	if (!med_is_authserver_present())
 		return 0;
 
+	sender = (struct mount_kobject*)kmalloc(sizeof(struct mount_kobject), GFP_KERNEL);
+	if (!sender)
+		return MED_ERR;
+	
 	init_med_object(&(mount_security(path->mnt->mnt_sb)->med_object));
+	if (mount_kern2kobj(sender, path) < 0) {
+		kfree(sender);
+		return MED_ERR;
+	}
 
-	if (mount_kern2kobj(&sender, path) < 0)
-		return 0;
-
-	event.mnt_id = sender.mnt_id;
-	strscpy(event.mount_path, sender.mount_path, sizeof(event.mount_path));
-
-	retval = MED_DECIDE(mount_event, &event, &sender, &sender);
+	retval = MED_DECIDE(mount_event, &event, sender, sender);
+	kfree(sender);
 	if (retval != MED_ERR)
 		return 1;
 

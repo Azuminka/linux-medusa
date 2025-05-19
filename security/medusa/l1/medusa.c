@@ -631,7 +631,7 @@ static void medusa_l1_sb_free_security(struct super_block *sb)
 {
 	/*nothing really here*/
 }
-#ifdef CONFIG_SECURITY_MOUNT
+
 static int medusa_l1_sb_mount(const char *dev_name, const struct path *path,
 								const char *type, unsigned long flags, void *data)
 {
@@ -640,27 +640,27 @@ static int medusa_l1_sb_mount(const char *dev_name, const struct path *path,
 	return 0;
 }
 
-static int l1_sb_remount(struct super_block *sb, void *data)
+static int medusa_l1_sb_remount(struct super_block *sb, void *data)
 {
     return 0;
 }
 
-static int l1_sb_umount(struct vfsmount *mnt, int flags)
+static int medusa_l1_sb_umount(struct vfsmount *mnt, int flags)
 {
     return 0;
 }
 
-static int l1_move_mount(const struct path *from_path, const struct path *to_path)
+static int medusa_l1_move_mount(const struct path *from_path, const struct path *to_path)
 {
     return 0;
 }
 
-static int l1_sb_pivotroot(const struct path *old_path, const struct path *new_path)
+static int medusa_l1_sb_pivotroot(const struct path *old_path, const struct path *new_path)
 {
     return 0;
 }
 
-#endif	/* CONFIG_SECURITY_MOUNT */
+
 /*
  * static void medusa_l1_d_instantiate(struct dentry *dentry, struct inode *inode)
  * {
@@ -790,13 +790,11 @@ static struct security_hook_list medusa_l1_hooks[] = {
 	 */
 #endif /* CONFIG_SECURITY_NETWORK */
 
-#ifdef CONFIG_SECURITY_MOUNT
     LSM_HOOK_INIT(sb_mount, medusa_l1_sb_mount),
     LSM_HOOK_INIT(sb_remount, medusa_l1_sb_remount),
     LSM_HOOK_INIT(sb_umount, medusa_l1_sb_umount),
     LSM_HOOK_INIT(move_mount, medusa_l1_move_mount),
     LSM_HOOK_INIT(sb_pivotroot, medusa_l1_sb_pivotroot),
-#endif /* CONFIG_SECURITY_MOUNT */
 };
 
 struct security_hook_list medusa_l1_hooks_alloc[] = {

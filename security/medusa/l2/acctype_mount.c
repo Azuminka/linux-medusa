@@ -11,17 +11,17 @@
 
 struct mount_access {
 	MEDUSA_ACCESS_HEADER;
-	char mount_path[NAME_MAX + 1];
+	//char mount_path[NAME_MAX + 1];
 };
 
 MED_ATTRS(mount_access) {
-	MED_ATTR_RO(mount_access, mount_path, "mount_path", MED_STRING),
+	//MED_ATTR_RO(mount_access, mount_path, "mount_path", MED_STRING),
 	MED_ATTR_END
 };
 
 MED_ACCTYPE(mount_access, "mount",
             process_kobject, "process",
-            mount_kobject, "mount");
+            mount_kobject, "mnt"); //premenovat
 
 static int __init mount_acctype_init(void)
 {
@@ -29,23 +29,27 @@ static int __init mount_acctype_init(void)
 	return 0;
 }
 
-enum medusa_answer_t medusa_do_mount(const struct path *path)
+static enum medusa_answer_t medusa_do_mount(const struct path *path)
 {
 	struct mount_access access;
 	struct process_kobject process;
-	struct mount_kobject mount;
+	struct mount_kobject *mount; //dynamicky
 	enum medusa_answer_t retval;
 
-	if (mount_kern2kobj(&mount, path) < 0)
+	mount = (struct mount_kobject*)kmalloc(sizeof(struct mount_kobject), GFP_KERNEL);
+	if(!mount)
+		return MED_ERR;
+	
+	if (mount_kern2kobj(mount, path) < 0)
 		return MED_ERR;
     //toto bude nejak chciet vlastnu funkciu: priradenie cesty ako nazov
-	strncpy(access.mount_path, mount.mount_path, sizeof(access.mount_path));
-	access.mount_path[sizeof(access.mount_path) - 1] = '\0';
+	//strncpy(access.mount_path, mount->mount_path, sizeof(access.mount_path));
+	//access.mount_path[sizeof(access.mount_path) - 1] = '\0';
 
 	process_kern2kobj(&process, current);
 
-	retval = MED_DECIDE(mount_access, &access, &process, &mount);
-
+	retval = MED_DECIDE(mount_access, &access, &process, mount);
+	kfree(mount);
 	return retval;
 }
 
@@ -58,24 +62,25 @@ enum medusa_answer_t medusa_mount(const char *dev_name, const struct path *path,
 		.as = AS_NO_REQUEST,
 	};
 
+	printk("mnt 1\n");
 	if (!is_med_magic_valid(&task_security(current)->med_object) &&
 	    process_kobj_validate_task(current) <= 0)
 		return mad.ans;
-
+	printk("mnt 2\n");
 	if (!path || !path->mnt || !path->mnt->mnt_sb ||
 	    !is_med_magic_valid(&mount_security(path->mnt->mnt_sb)->med_object)) {
-		if (mount_kern2kobj(NULL, path) < 0)
-			return mad.ans;
-
+		//if (mount_kern2kobj(NULL, path) < 0)
+		//	return mad.ans;
+		printk("mnt 2.1\n");
 		if (mount_kobj_validate_path(path) <= 0)
 			return mad.ans;
 	}
-
+	printk("mnt 3\n");
 	if (MEDUSA_MONITORED_ACCESS_O(mount_access, mount_security(path->mnt->mnt_sb))) {
 		mad.ans = medusa_do_mount(path);
 		mad.as = AS_REQUEST;
 	}
-
+	printk("mnt 4\n");
 	if (task_security(current)->audit) {
 		cad.type = LSM_AUDIT_DATA_PATH;
 		cad.u.path = *path;
