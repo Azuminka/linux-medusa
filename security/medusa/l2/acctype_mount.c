@@ -27,6 +27,16 @@ static int __init mount_acctype_init(void)
 	return 0;
 }
 
+/**
+ * medusa_do_mount - Perform Medusa authorization for mount operation
+ * @path: target mount point
+ *
+ * Converts kernel data to Medusa kobjects and performs access check for mount.
+ * Allocates and fills mount_kobject, prepares process object, and sends 
+ * request to authorization server using the mount_access rule.
+ *
+ * Return: decision from authorization server (MED_ALLOW, MED_DENY, or MED_ERR)
+ */
 static enum medusa_answer_t medusa_do_mount(const struct path *path)
 {
 	struct mount_access access;
@@ -48,7 +58,20 @@ static enum medusa_answer_t medusa_do_mount(const struct path *path)
 	return retval;
 }
 
-
+/**
+ * medusa_mount - Hook for mount operation in Medusa LSM
+ * @dev_name: device name to mount (may be NULL)
+ * @path: target mount point
+ * @type: filesystem type (may be NULL)
+ * @flags: mount flags
+ * @data: filesystem-specific data (may be NULL)
+ *
+ * Validates the current task and mount target. If the operation is monitored,
+ * it is authorized via medusa_do_mount() and optionally audited.
+ *
+ * Return: MED_ALLOW if permitted,
+ *         MED_DENY or MED_ERR otherwise.
+ */
 enum medusa_answer_t medusa_mount(const char *dev_name, const struct path *path, const char *type, unsigned long flags, void *data)
 {
 	struct common_audit_data cad;
