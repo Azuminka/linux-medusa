@@ -638,7 +638,13 @@ static int medusa_l1_sb_mount(const char *dev_name, const struct path *path,
 
 static int medusa_l1_sb_umount(struct vfsmount *mnt, int flags)
 {
-    return 0;
+    struct path path = {
+		.mnt = mnt,
+		.dentry = mnt->mnt_root
+	};
+	if  (medusa_umount(&path) == MED_DENY)
+		return -EACCES;
+	return 0;
 }
 
 /*

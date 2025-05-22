@@ -83,7 +83,7 @@ enum medusa_answer_t medusa_mount(const char *dev_name, const struct path *path,
 	if (!is_med_magic_valid(&task_security(current)->med_object) &&
 	    process_kobj_validate_task(current) <= 0)
 		return mad.ans;
-	printk("mnt 2\n");
+
 	if (!path || !path->mnt || !path->mnt->mnt_sb ||
 	    !is_med_magic_valid(&mount_security(path->mnt->mnt_sb)->med_object)) {
 		if (mount_kobj_validate_path(path) <= 0)
