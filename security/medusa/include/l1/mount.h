@@ -15,9 +15,6 @@
 /* prototypes of L2 process related handlers called from L1 hooks */
 extern enum medusa_answer_t medusa_mount(const char *dev_name, const struct path *path, const char *type, unsigned long flags, void *data);
 extern enum medusa_answer_t medusa_umount(const struct path *path);
-extern enum medusa_answer_t medusa_remount(const struct path *path, unsigned long flags, void *data);
-extern enum medusa_answer_t medusa_pivotroot(const struct path *old_path, const struct path *new_path);
-extern enum medusa_answer_t medusa_move_mount(const struct path *from_path, const struct path *to_path);
 extern int mount_kobj_validate_path(const struct path *path);
 extern struct lsm_blob_sizes medusa_blob_sizes;
 
